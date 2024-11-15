@@ -95,6 +95,44 @@ router.post("/login", async (req, res) => {
     }
 });
 
+// Ruta logica para registrar un usuario
+router.put('/resetPassword', async (req, res) => {
+    const conn = await getConnection();
+
+    try {
+        const email = req.body.email;
+        const new_password_bcrypt = await encriptar(req.body.password);
+
+        // Inicia la transacción
+        await conn.beginTransaction();
+
+        // Inserción en la tabla `usuarios`
+        await conn.query(`
+            UPDATE usuarios
+            SET contrasena = ?
+            WHERE correo = ?
+        `, [
+            new_password_bcrypt,
+            email,
+        ]);
+
+        // Confirma la transacción
+        await conn.commit();
+
+        res.status(201).json(
+            {
+                'message': 'Contraseña actualizada correctamente'
+            }
+        );
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error interno del servidor");
+    } finally {
+        // Siempre libera la conexión, incluso en caso de errores
+        conn.release();
+    }
+});
+
 // Ruta logica de inicio de sesion
 router.post("/profileUser", async (req, res) => {
     const conn = await getConnection();
