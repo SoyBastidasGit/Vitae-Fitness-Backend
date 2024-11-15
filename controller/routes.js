@@ -164,4 +164,46 @@ router.post("/profileUser", async (req, res) => {
     }
 });
 
+// Ruta logica de inicio de sesion
+router.put("/updateProfile", async (req, res) => {
+    const conn = await getConnection();
+    try {
+        const name = req.body.name;
+        const lastname = req.body.lastname;
+        const email = req.body.email;
+        const old_email = req.body.old_email;
+
+        await conn.query(`
+            UPDATE usuarios
+            SET 
+                nombre = ?,
+                apellido = ?,
+                correo = ?
+            WHERE 
+                correo = ?;
+        `, [name, lastname, email, old_email]);
+
+        const result = await conn.query(`
+            SELECT
+                nombre,
+                apellido,
+                correo
+            FROM
+                usuarios
+            WHERE
+                usuarios.correo = (?)`, [email]);
+
+        res.status(200).json(
+            {
+                'message': 'Autorizado', result
+            }
+        );
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error interno del servidor");
+    } finally {
+        conn.release();
+    }
+});
+
 module.exports = router;
