@@ -4,8 +4,8 @@ const mariadb = require('mariadb');
 const pool = mariadb.createPool({
     host: process.env.DB_HOST || '31.220.17.192',
     database: process.env.DB_NAME || 'vitae_fitness',
-    user: process.env.DB_USER || 'jramirez',
-    password: process.env.DB_PASSWORD || '#Jramirez_MariaDB!2024',
+    user: process.env.DB_USER || 'vitae',
+    password: process.env.DB_PASSWORD || '#Vitae!123@',
     connectionLimit: 5
 });
 
